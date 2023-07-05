@@ -6,6 +6,8 @@ namespace SiteParser.Sites;
 public static class WienerBoerseParse
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+    
+    private static string _path = Directory.GetCurrentDirectory();
 
     private static readonly string _url = "https://www.wienerborse.at/en/stocks-prime-market/";
     private static HtmlWeb _webClient = new();
@@ -13,8 +15,6 @@ public static class WienerBoerseParse
 
     private static DateTime _today = DateTime.Today;
     private static string _formattedDate = _today.ToString("yyyyMMdd");
-
-    private static string _csvFile = $"WienerBoerse_{_formattedDate}.csv";
 
     private static string? _name;
     private static string? _last;
@@ -32,10 +32,18 @@ public static class WienerBoerseParse
     {
         try
         {
+            
+            string newPathForResult = Path.Combine(_path, "Result");
+            
+            if(!Directory.Exists(newPathForResult))
+                Directory.CreateDirectory(newPathForResult);
+            
+            string csvFile = Path.Combine(newPathForResult, $"WienerBoerse_{_formattedDate}.csv");
+
             var rows = _document.DocumentNode.SelectNodes("//tbody/tr");
             if (rows != null)
             {
-                using StreamWriter writer = new StreamWriter(_csvFile);
+                using StreamWriter writer = new StreamWriter(csvFile);
                 // Записываем заголовок CSV
                 writer.WriteLine(
                     "Name\tLast\tChg. % 1D\tDate Time\tMarket Capitalization\tBid Volume\tAsk Volume\tTotal Volume\tTotal Value\tStatus");

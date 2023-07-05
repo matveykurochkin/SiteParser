@@ -28,13 +28,13 @@ public static class ShanghaiFuturesExchangeParse
 {
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
+    private static string _path = Directory.GetCurrentDirectory();
+
     private static readonly HttpClient _httpClient = new();
     private static string _url = "https://www.shfe.com.cn/data/delaymarket_ag.dat";
 
     private static DateTime _today = DateTime.Today;
     private static string _formattedDate = _today.ToString("yyyyMMdd");
-
-    private static string _csvFile = $"ShanghaiFuturesExchange_{_formattedDate}.csv";
 
     private static string? _contractName;
     private static string? _lastPrice;
@@ -53,13 +53,20 @@ public static class ShanghaiFuturesExchangeParse
     {
         try
         {
+            string newPathForResult = Path.Combine(_path, "Result");
+            
+            if(!Directory.Exists(newPathForResult))
+                Directory.CreateDirectory(newPathForResult);
+            
+            string csvFile = Path.Combine(newPathForResult, $"ShanghaiFuturesExchange_{_formattedDate}.csv");
+
             string data = await _httpClient.GetStringAsync(_url);
 
             DelayMarket? marketData = JsonConvert.DeserializeObject<DelayMarket>(data);
 
             if (marketData is not null)
             {
-                await using StreamWriter writer = new StreamWriter(_csvFile);
+                await using StreamWriter writer = new StreamWriter(csvFile);
                 // Записываем заголовок CSV
                 await writer.WriteLineAsync(
                     "Contract Name\tLast Price\tUpper Down\tOpen Interest\tVolume\tTurnover\tBid-Ask\tAsk Price\tPre-Settlement Price\tOpen Price\tHigh Price\tLower Price");
