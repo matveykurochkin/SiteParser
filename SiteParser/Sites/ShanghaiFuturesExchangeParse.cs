@@ -3,6 +3,7 @@ using NLog;
 
 namespace SiteParser.Sites;
 
+// класс используется для расшифровки JSON-объектов
 public class ContractData
 {
     public string? ContractName { get; set; }
@@ -67,7 +68,8 @@ public static class ShanghaiFuturesExchangeParse
             if (marketData is not null)
             {
                 await using StreamWriter writer = new StreamWriter(csvFile);
-                // Записываем заголовок CSV
+                
+                // Записываем заголовок в csv - файл
                 await writer.WriteLineAsync(
                     "Contract Name\tLast Price\tUpper Down\tOpen Interest\tVolume\tTurnover\tBid-Ask\tAsk Price\tPre-Settlement Price\tOpen Price\tHigh Price\tLower Price");
 
@@ -87,6 +89,7 @@ public static class ShanghaiFuturesExchangeParse
                     _highPrice = contract.HighPrice;
                     _lowerPrice = contract.LowerPrice;
 
+                    // записываем полученные данные в log - файл
                     _logger.Info($"\nContract Name: {_contractName}\n" +
                                  $"Last Price: {_lastPrice}\n" +
                                  $"Upper Down: {_upperDown}\n" +
@@ -100,6 +103,7 @@ public static class ShanghaiFuturesExchangeParse
                                  $"High Price: {_highPrice}\n" +
                                  $"Lower Price: {_lowerPrice}\n");
 
+                    // записываем полученные данные в csv - файл
                     await writer.WriteLineAsync(
                         $"{_contractName}\t{_lastPrice}\t{_upperDown}\t{_openInterest}\t{_volume}\t{_turnover}\t{_bidPrice}\t{_askPrice}\t{_preSettlementPrice}\t{_openPrice}\t{_highPrice}\t{_lowerPrice}");
                 }

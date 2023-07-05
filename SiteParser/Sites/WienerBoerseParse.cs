@@ -32,7 +32,6 @@ public static class WienerBoerseParse
     {
         try
         {
-            
             string newPathForResult = Path.Combine(_path, "Result");
             
             if(!Directory.Exists(newPathForResult))
@@ -44,11 +43,13 @@ public static class WienerBoerseParse
             if (rows != null)
             {
                 using StreamWriter writer = new StreamWriter(csvFile);
-                // Записываем заголовок CSV
+                
+                // Записываем заголовок в csv - файл
                 writer.WriteLine(
                     "Name\tLast\tChg. % 1D\tDate Time\tMarket Capitalization\tBid Volume\tAsk Volume\tTotal Volume\tTotal Value\tStatus");
-
-                foreach (var row in rows)
+                
+                // перебираем каждую ячейку (td) в каждой строчке (tr)
+                foreach (var row in rows) 
                 {
                     var cells = row.SelectNodes("td");
 
@@ -66,6 +67,7 @@ public static class WienerBoerseParse
                     _totalValue = cells[8].InnerText;
                     _status = cells[9].InnerText;
 
+                    // записываем полученные данные в log - файл
                     _logger.Info(
                         $"\nName: {_name}\n" +
                         $"Last: {_last}\n" +
@@ -78,6 +80,7 @@ public static class WienerBoerseParse
                         $"Total Value: {_totalValue}\n" +
                         $"Status: {_status}\n");
 
+                    // записываем полученные данные в csv - файл
                     writer.WriteLine(
                         $"{_name}\t{_last}\t{_changeOneDayPercent} {_changeOneDayPercent}\t{_dateTime}\t{_marketCapitalization}\t{_bidVolume}\t{_askVolume}\t{_totalVolume}\t{_totalValue}\t{_status}");
                 }
